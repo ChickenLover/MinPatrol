@@ -3,6 +3,12 @@ import json
 import sqlite3
 
 DBNAME = "data.db"
+statuses = dict(enumerate(
+    ["STATUS_COMPLIANT",
+    "STATUS_NOT_COMPLIANT",
+    "STATUS_NOT_APPLICABLE",
+    "STATUS_ERROR",
+    "STATUS_EXCEPTION"], 1))
 
 def get_db():
     return sqlite3.connect(DBNAME)
@@ -13,13 +19,15 @@ def initialize_tables():
     c.execute('\
             CREATE TABLE IF NOT EXISTS controls(\
             id INTEGER PRIMARY KEY,\
-            description TEXT)')
+            title TEXT,\
+            description TEXT,\
+            requirements TEXT,\
+            transport TEXT)')
 
     c.execute('\
             CREATE TABLE IF NOT EXISTS\
             scandata(\
             id INTEGER PRIMARY KEY,\
-            description,\
             status\
             )')
     db.commit()
@@ -27,9 +35,9 @@ def initialize_tables():
     with open("controls.json") as f:
         controls = json.load(f)
 
-    for complaint_record in controls:
+    for compliance_record in controls:
         c.execute('\
-            INSERT INTO controls(id, description)\
-            VALUES (?,?)', tuple(complaint_record))
+            INSERT OR IGNORE INTO controls(id, title, description, requirements, transport)\
+            VALUES (?,?,?,?,?)', tuple(compliance_record))
         db.commit()
     db.close()

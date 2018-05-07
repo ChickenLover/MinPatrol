@@ -1,34 +1,29 @@
 import os
 import json
 import importlib
+import time
 
 from db_comp import *
+from reporting import make_report
+import scripts
 
 def add_control(control_id, status):
-    statuses = dict(enumerate(
-        ["STATUS_COMPLIANT",
-        "STATUS_NOT_COMPLIANT",
-        "STATUS_NOT_APPLICABLE",
-        "STATUS_ERROR",
-        "STATUS_EXCEPTION"], 1))
-
     db = get_db()
-    c = db.cursor()
-    c.execute('SELECT * FROM controls WHERE id=?', str(control_id))
-    complaint_data = c.execute('SELECT * FROM controls WHERE id=?', str(control_id)).fetchone()
-
-    c.execute('\
-            INSERT INTO scandata(id, description, status)\
-            VALUES(?,?,?)', tuple(list(complaint_data) + [statuses[status]])
-    )
+    db.cursor().execute('\
+            INSERT OR IGNORE INTO scandata(id, status)\
+            VALUES(?,?)', (control_id, statuses[status]))
     db.commit()
     db.close()
 
 def main():
-    for script_name in [f for f in os.listdir("./scripts") if f[-3:] == '.py']:
-        script = importlib.import_module("scripts." + script_name[:-3])
-        add_control(0, script.main())
+    initialize_tables()
+    start_time = time.time()
+    for module_name in filter(lambda f: f.endswith('.py'), os.listdir("./scripts")):
+        script = importlib.import_module("." + module_name[:-3], package='scripts')
+        add_control(int(module_name[:3]), script.main())
+    time_passed = int(time.time() - start_time)
+    scan_time = "{}h {}m {}s".format(time_passed//3600, time_passed%3600//60, time_passed%60)
+    make_report(scan_time)
 
 if __name__=="__main__":
-    initialize_tables()
     main()
