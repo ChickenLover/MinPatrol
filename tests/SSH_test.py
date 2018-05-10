@@ -1,5 +1,5 @@
 import pytest
-from min_patrol import *
+from transports import *
 
 def test_init():
         SSHTransport("localhost", 4500, "root", "pwd")

@@ -1,11 +1,10 @@
 import os
-import json
 import importlib
 import time
 
 from db_comp import *
 from reporting import make_report
-import scripts
+
 
 def add_control(control_id, status):
     db = get_db()
@@ -15,15 +14,16 @@ def add_control(control_id, status):
     db.commit()
     db.close()
 
+
 def main():
     initialize_tables()
     start_time = time.time()
     for module_name in filter(lambda f: f.endswith('.py'), os.listdir("./scripts")):
         script = importlib.import_module("." + module_name[:-3], package='scripts')
         add_control(int(module_name[:3]), script.main())
-    time_passed = int(time.time() - start_time)
-    scan_time = "{}h {}m {}s".format(time_passed//3600, time_passed%3600//60, time_passed%60)
-    make_report(scan_time)
+    time_passed = time.time() - start_time
+    make_report(time_passed)
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()

@@ -2,6 +2,7 @@ import json
 
 import sqlite3
 
+
 DBNAME = "data.db"
 statuses = dict(enumerate(
     ["STATUS_COMPLIANT",
@@ -10,8 +11,10 @@ statuses = dict(enumerate(
     "STATUS_ERROR",
     "STATUS_EXCEPTION"], 1))
 
+
 def get_db():
     return sqlite3.connect(DBNAME)
+
 
 def initialize_tables():
     db = get_db()
@@ -37,7 +40,12 @@ def initialize_tables():
 
     for compliance_record in controls:
         c.execute('\
-            INSERT OR IGNORE INTO controls(id, title, description, requirements, transport)\
+            INSERT OR IGNORE INTO controls(\
+            id,\
+            title,\
+            description,\
+            requirements,\
+            transport)\
             VALUES (?,?,?,?,?)', tuple(compliance_record))
         db.commit()
     db.close()
