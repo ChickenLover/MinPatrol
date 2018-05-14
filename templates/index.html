@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System compliance report</title>
+</head>
+<body>
+
+<article class="A4">
+    <div class="main-page-wrapper">
+        <h1 class="main-title">
+            System compliance report
+        </h1>
+    </div>
+</article>
+
+<article class="A4">
+    <h1 class="main-title">
+        System summary
+    </h1>
+    <h3>
+        <ul>
+            <li><b>Scanning date</b>: {{scan_date}}</li>
+            <li><b>Scanning time</b>: {{scan_time}}</li>
+            <li><b>System host</b>: {{system_host}}</li>
+            <li>Used transports:
+            <ul>
+                {% for transport_name, transport in transports.items() %}
+                <li>
+                    <p>Transport: {{transport_name}}</p>
+                    <p>Port: {{transport.port}}</p>
+                    <p>Login: {{transport.login}}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            </li>
+        </ul>
+    </h3>
+    <h1 class="main-title">
+        Compliance summary
+    </h1>
+    <h3>
+        <ul>
+            <li><b>Total checks</b>: {{total_checks}}</li>
+            <li><b>Compliant checks</b>: {{STATUS_COMPLIANT_checks}}</li>
+            <li><b>Not compliant checks</b>: {{STATUS_NOT_COMPLIANT_checks}}</li>
+            <li><b>Not applicable checks</b>: {{STATUS_NOT_APPLICABLE_checks}}</li>
+            <li><b>Error checks</b>: {{STATUS_ERROR_checks}}</li>
+            <li><b>Exception checks</b>: {{STATUS_EXCEPTION_checks}}</li>
+        </ul>
+    </h3>
+</article>
+
+
+<article class="A4">
+    <h1>
+        Compliances
+    </h1>
+    {% for comp in comp_data %}
+    <article>
+        <h3>Title: {{comp.title}}</h3>
+        <p>Id: {{comp.id}}</p>
+
+        <p>Requirements: {{comp.requirements}}</p>
+        <p>Status: 
+        {% if comp.status == "STATUS_COMPLIANT" %}
+            <span class="compliant">
+        {% elif comp.status == "STATUS_NOT_COMPLIANT" %}
+            <span class="not-compliant">
+        {% elif comp.status == "STATUS_NOT_APPLICABLE" %}
+            <span class="not-applicable">
+        {% elif comp.status == "STATUS_ERROR" %}
+            <span class="not-compliant">
+        {% elif comp.status == "STATUS_EXCEPTION" %}
+            <span class="not-applicable">
+        {% endif %}
+                {{comp.status}}</span></p>
+        <p>Description: {{comp.description}}</p>
+    </article>
+    {% endfor %}
+</article>
+
+</body>
+</html>

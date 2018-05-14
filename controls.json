@@ -1,0 +1,4 @@
+[
+  ["000", "File exists", "File named 'testfile' is present in the root folder on the target system.",
+   "File should be present in the root folder on the target system", "SSH"]
+]
